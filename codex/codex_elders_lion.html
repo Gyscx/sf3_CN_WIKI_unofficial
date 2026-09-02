@@ -3,53 +3,148 @@
 
 <head>
     <meta charset="UTF-8">
-    <title> | Shadow Fight 3 中文 Wiki</title>
+    <title>长老之狮 | Shadow Fight 3 中文 Wiki</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
-    <header class="top">
-        <div class="logo"><img src="./Logo.png" alt="暗影格斗3" height="50"> </div>
-        <nav>
-            <a href="index.html">首页</a>
-            <a href="factions.html">派系</a>
-            <a href="guides.html">攻略</a>
-            <a href="codex.html">图鉴</a>
-            <a href="story.html">剧情</a>
-            <a href="http://192.168.1.10:3000/register.html"><span style="color: greenyellow;">注册</span></a>
-            <a href="http://192.168.1.10:3000/login.html"><span style="color: red;">登录</span></a>
-        </nav>
-    </header>
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="login-modal" style="display: none;">
+        <div class="login-box">
+            <h2>请先登录</h2>
+            <p>您需要登录才能访问此页面</p>
 
+            <div class="input-group">
+                <label for="loginUsername">用户名</label>
+                <input type="text" id="loginUsername" placeholder="请输入用户名">
+            </div>
+
+            <div class="input-group">
+                <label for="loginPassword">密码</label>
+                <input type="password" id="loginPassword" placeholder="请输入密码">
+            </div>
+
+            <div class="login-buttons">
+                <button id="performLogin" class="login-btn">登录</button>
+                <button id="goToRegister" class="register-btn">注册账号</button>
+            </div>
+        </div>
+    </div>
+    <header class="top">
+        <div class="logo"><img src="../images/Logo.png" alt="暗影格斗3" height="50"> </div>
+        <nav>
+            <a href="../index.html">首页</a>
+            <a href="../factions.html">派系</a>
+            <a href="../guides.html">攻略</a>
+            <a href="../codex.html">图鉴</a>
+            <a href="../story.html">剧情</a>
+            <a href="http://192.168.1.10:3000/login.html" class="login_display" id="loginDisplay"><span
+                    style="color: red;">登录</span></a>
+        </nav>
+
+        <!-- 用户信息区域 -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            欢迎， <span id="usernameDisplay"></span>
+            <button id="logoutBtn" class="logout-btn">退出登录</button>
+        </div>
+    </header>
 
     <main class="container">
         <nav class="breadcrumb">
-            <a href="index.html">首页</a><span class="sep">›</span>
-            <a href="codex.html">图鉴</a><span class="sep">›</span>
-            <a href="codex_set_buff.html">套装(有BUFF)</a><span class="sep">›</span>
-            <a href="codex_set_buff_legion.html">军团套装(有BUFF)</a><span class="sep">›</span>
-
+            <a href="../index.html">首页</a><span class="sep">›</span>
+            <a href="../codex.html">图鉴</a><span class="sep">›</span>
+            <a href="./codex_set_buff.html">套装(有BUFF)</a><span class="sep">›</span>
+            <a href="./codex_set_buff_legion.html">军团套装(有BUFF)</a><span class="sep">›</span>
+            长老之狮
         </nav>
         <div>
-            <h1></h1>
+            <h2>长老之狮</h2><br>
 
-            <h2>1-</h2>
-
-
-            <h2>2-</h2>
-
-
-            <h2>3-</h2>
+            <h3><span class="title_y">1</span>-狂乱</h3>
+            <p>处于<strong>势不可挡</strong>状态时造成的伤害<span class="span_y">+10%</span></p>
+            <p>暴击概率<span class="span_y">+10%</span></p><br>
 
 
-            <h2>4-</h2>
+            <h3><span class="title_y">2</span>-逆反秩序</h3>
+            <p><em>被动</em></p>
+            <p><span class="span_y">兄弟追忆</span></p>
+            <p>你不使用暗影能量，而是使用<span class="span_y">寂佚</span>能量。</p>
+            <p>你造成或受到伤害时获得的能量减少<span class="span_y">80%</span>。</p>
+            <p>你无法通过任何其他来源获得能量，且额外的<strong>暗影能量</strong>特技对你无效。你会在回合间保留已累积的能量。</p>
+            <p>用于进入<strong>暗影之体</strong>状态的按钮会被<span class="span_y">毁灭之矛</span>技能按钮替换。</p>
+            <p>该技能按钮会于<strong>寂佚</strong>能量条至少填充了<span class="span_y">50%</span>时可用。</p><br>
+
+            <p><em>主动</em></p>
+            <p><span class="span_y">狮之咆哮</span></p>
+            <p>你发出一声战吼，使对手<strong>踉跄后退</strong>并在成功命中时对其造成<span
+                    class="span_y">15%</span>的<strong>暗影伤害</strong>，同时进入<span class="span_y">护国热潮</span>状态，持续<span
+                    class="span_y">7秒</span>。</p>
+            <p>使用<strong>狮之咆哮</strong>将会解锁<strong>风暴破坏者</strong>技能。</p>
+            <p>冷却时间：<span class="span_y">9秒</span></p><br>
+
+            <p><em>被动</em></p>
+            <p><span class="span_y">护国热潮</span></p>
+            <p>进入<strong>护国热潮</strong>状态后，你将获得<strong>势不可挡</strong>，持续<span
+                    class="span_y">6秒</span>，你的<strong>武器</strong>和<strong>徒手伤害</strong>会增加<span
+                    class="span_y">60%</span>，且暴击概率增加<span class="span_y">10%</span>。
+            </p><br>
+
+            <p><em>主动</em></p>
+            <p><em>施放<strong>狮之咆哮</strong>且<strong>寂佚</strong>能量条至少填充了<span class="span_y">50%</span>后可用</em></p>
+            <p><span class="span_y">风暴破坏者</span></p>
+            <p>你在<span class="span_y">3秒</span>内向对手释放<span class="span_y">10</span>道<span class="span_y">闪电雷霆</span>。
+            </p>
+            <p>每道<strong>闪电</strong>都会击中对手附近的随机位置，且命中后会使其<strong>瘫痪</strong><span class="span_y">0.5秒</span>并对其造成<span
+                    class="span_y">12.5%</span>的<strong>暗影伤害</strong>。
+            </p>
+            <p>当对手被<strong>瘫痪</strong>时，<strong>毁灭之矛</strong>对其造成的伤害会增加<span class="span_y">50%</span>。</p>
+            <p>使用<strong>风暴破坏者</strong>后你将可以再次使用<strong>狮之咆哮</strong>技能。</p><br>
 
 
-            <h2>5-</h2>
+            <h3><span class="title_y">3</span>-无可触碰</h3>
+            <p>当你处于<strong>护国热潮</strong>状态中时，你的防御增加<span class="span_y">75%</span></p><br>
 
 
-            <h2>6-</h2>
+            <h3><span class="title_y">4</span>-复仇誓言</h3>
+            <p><em>被动</em></p>
+            <p><span class="span_y">往日幽魂</span></p>
+            <p>你在战斗开始时拥有<span class="span_y">30%</span>的<strong>寂佚</strong>能量。</p><br>
+
+            <p><em>被动</em></p>
+            <p><span class="span_y">恫吓咆哮</span></p>
+            <p>现在<strong>狮之咆哮</strong>命中时会使对手<strong>晕眩</strong><span class="span_y">2秒</span>。</p>
+            <p>现在你可以用<strong>狮之咆哮</strong>造成<strong>暴击伤害</strong>，其概率与当前<strong>暴击概率</strong>相同。</p>
+
+            <p><em>被动</em></p>
+            <p><span class="span_y">风暴狂怒</span></p>
+            <p>现在你可以用<strong>风暴破坏者</strong>造成<strong>暴击伤害</strong>，其概率与当前<strong>暴击概率</strong>相同。</p><br>
+
+
+            <h3><span class="title_y">5</span>-王祸</h3>
+            <p>狮之咆哮的冷却时间<span class="span_y">-1秒</span></p>
+            <p>暴击概率<span class="span_y">+5%</span></p><br>
+
+
+            <h3><span class="title_y">6</span>-人民英雄</h3>
+            <p><em>被动</em></p>
+            <p><span class="span_y">人民之声</span></p>
+            <p><strong>护国热潮</strong>及其<strong>势不可挡</strong>效果的持续时间延长<span class="span_y">1秒</span>。</p><br>
+
+            <p><em>被动</em></p>
+            <p><span class="span_y">狂哮寂佚</span></p>
+            <p>处于<strong>护国热潮</strong>状态中时，你获得的能量增加<strong>240%</strong>。</p><br>
+
+            <p><em>被动</em></p>
+            <p><span class="span_y">必应之报</span></p>
+            <p><strong>毁灭之矛</strong>必定造成<strong>暴击伤害</strong>且会消耗所有已累积的<strong>寂佚</strong>能量。</p>
+            <p>使用<strong>毁灭之矛</strong>时每消耗<span class="span_y">1%</span>的能量，其伤害增加<span class="span_y">1.5%</span>。</p>
+            <br>
+
+            <p><em>被动</em></p>
+            <p><span class="span_y">螫痛之矛</span></p>
+            <p>当前每有<span class="span_y">1%</span>的<strong>暴击概率</strong>，<strong>毁灭之矛</strong>的伤害就增加<span
+                    class="span_y">2%</span>。</p>
 
         </div>
 

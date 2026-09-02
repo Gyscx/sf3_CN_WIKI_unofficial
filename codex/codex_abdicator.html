@@ -3,25 +3,52 @@
 
 <head>
     <meta charset="UTF-8">
-    <title> | Shadow Fight 3 中文 Wiki</title>
+    <title>让位者 | Shadow Fight 3 中文 Wiki</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
-    <header class="top">
-        <div class="logo"><img src="./Logo.png" alt="暗影格斗3" height="50"> </div>
-        <nav>
-            <a href="index.html">首页</a>
-            <a href="factions.html">派系</a>
-            <a href="guides.html">攻略</a>
-            <a href="codex.html">图鉴</a>
-            <a href="story.html">剧情</a>
-            <a href="http://192.168.1.10:3000/register.html"><span style="color: greenyellow;">注册</span></a>
-            <a href="http://192.168.1.10:3000/login.html"><span style="color: red;">登录</span></a>
-        </nav>
-    </header>
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="login-modal" style="display: none;">
+        <div class="login-box">
+            <h2>请先登录</h2>
+            <p>您需要登录才能访问此页面</p>
 
+            <div class="input-group">
+                <label for="loginUsername">用户名</label>
+                <input type="text" id="loginUsername" placeholder="请输入用户名">
+            </div>
+
+            <div class="input-group">
+                <label for="loginPassword">密码</label>
+                <input type="password" id="loginPassword" placeholder="请输入密码">
+            </div>
+
+            <div class="login-buttons">
+                <button id="performLogin" class="login-btn">登录</button>
+                <button id="goToRegister" class="register-btn">注册账号</button>
+            </div>
+        </div>
+    </div>
+    <header class="top">
+        <div class="logo"><img src="../images/Logo.png" alt="暗影格斗3" height="50"> </div>
+        <nav>
+            <a href="../index.html">首页</a>
+            <a href="../factions.html">派系</a>
+            <a href="../guides.html">攻略</a>
+            <a href="../codex.html">图鉴</a>
+            <a href="../story.html">剧情</a>
+            <a href="http://192.168.1.10:3000/login.html" class="login_display" id="loginDisplay"><span
+                    style="color: red;">登录</span></a>
+        </nav>
+
+        <!-- 用户信息区域 -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            欢迎， <span id="usernameDisplay"></span>
+            <button id="logoutBtn" class="logout-btn">退出登录</button>
+        </div>
+    </header>
 
     <main class="container">
         <nav class="breadcrumb">
@@ -29,27 +56,58 @@
             <a href="codex.html">图鉴</a><span class="sep">›</span>
             <a href="codex_set_buff.html">套装(有BUFF)</a><span class="sep">›</span>
             <a href="codex_set_buff_legion.html">军团套装(有BUFF)</a><span class="sep">›</span>
-
+            让位者
         </nav>
         <div>
-            <h1></h1>
+            <h2>让位者</h2><br>
 
-            <h2>1-</h2>
-
-
-            <h2>2-</h2>
+            <h3><span class="title_y">1</span>-神怒</h3>
+            <p>每失去<span class="span_y">1%</span>的生命值，你就获得<span class="span_y">1%</span>的伤害加成</p><br>
 
 
-            <h2>3-</h2>
+            <h3><span class="title_y">2</span>-坚韧信仰</h3>
+            <p><em>被动</em></p>
+            <p><span class="span_y">坚韧信仰</span></p>
+            <p>当你受到致命伤害时，<span class="span_y">坚韧信仰</span>会自动激活。</p>
+            <p>你会进入<strong>无敌状态</strong>及<strong>势不可挡</strong>状态，持续<span
+                    class="span_y">10秒</span>，且你的<strong>物理伤害</strong>会增加<span class="span_y">100%</span>。
+            </p>
+            <p>若你未能在<strong>坚韧信仰</strong>的持续时间结束前打败对手，则本回合战败。</p><br>
+
+            <p><em>被动</em></p>
+            <p><span class="span_y">神圣之怒</span></p>
+            <p>你的暴击会激活<span class="span_y">神圣之怒</span>，使闪电击中对手并造成等于你的攻击伤害的<span
+                    class="span_y">300%</span>的<strong>真实伤害</strong>。</p>
+            <p>若你尝试使用<strong>暗影技能</strong>，则<strong>神圣之怒</strong>有<span
+                    class="span_y">0%-100%</span>的概率会击中你——你的生命值越高，概率越高。</p><br>
 
 
-            <h2>4-</h2>
+            <h3><span class="title_y">3</span>-精准</h3>
+            <p>暴击概率<span class="span_y">+8%</span></p><br>
 
 
-            <h2>5-</h2>
+            <h3><span class="title_y">4</span>-求生之志</h3>
+            <p><em>被动</em></p>
+            <p>现在你可以在<span class="span_y">坚韧信仰</span>持续时间结束后继续战斗。</p>
+            <p><strong>坚韧信仰</strong>持续时间结束后，你会恢复<span class="span_y">5%</span>的生命值，且此技能提供的伤害加成会继续生效。</p>
+            <p>激活<strong>坚韧信仰</strong>后，你在本回合剩余的时间中无法受到<strong>震击</strong>。</p><br>
 
 
-            <h2>6-</h2>
+            <h3><span class="title_y">5</span>-信仰奇迹</h3>
+            <p><strong>坚韧信仰</strong>的持续时间结束后，你额外恢复 <span class="span_y">20%</span>的生命值</p><br>
+
+
+            <h3><span class="title_y">6</span>-胜利冲锋</h3>
+            <p><em>被动</em></p>
+            <p><span class="span_y">治愈之光</span></p>
+            <p><strong>坚韧信仰</strong>的持续时间结束后，你会开始每<span class="span_y">1秒</span>恢复<span class="span_y">3%</span>的生命值。
+            </p><br>
+
+            <p><em>主动</em></p>
+            <p><span class="span_y">胜利冲锋</span></p>
+            <p>在<strong>坚韧信仰</strong>激活后，你获得使用<span class="span_y">胜利冲锋</span>的能力——召唤一对光翼，进行冲刺，并造成等于你的武器伤害的<span
+                    class="span_y">100%</span>的物理伤害。</p>
+            <p><em>冷却时间：</em><span class="span_y">20秒</span></p>
 
         </div>
 

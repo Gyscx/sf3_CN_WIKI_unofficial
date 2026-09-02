@@ -574,6 +574,10 @@ a {
     text-decoration: none;
 }
 
+td a:hover {
+    color: #e7b012;
+}
+
 h1,
 h2,
 h3 {

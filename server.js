@@ -67,18 +67,6 @@ function initDatabase() {
         )
     `);
 
-    // 验证码表
-    db.run(`
-        CREATE TABLE IF NOT EXISTS verification_codes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL,
-            code TEXT NOT NULL,
-            type TEXT NOT NULL,
-            expires_at DATETIME NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    `);
-
     console.log('数据库表已初始化');
 }
 
@@ -128,105 +116,32 @@ function adminOnly(req, res, next) {
     next();
 }
 
-// ========== 发送验证码API ==========
-app.post("/api/send-verification-code", async (req, res) => {
-    try {
-        const { email, type } = req.body;
-
-        console.log('收到验证码请求:', { email, type });
-
-        // 验证邮箱格式
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({ error: '邮箱格式不正确' });
-        }
-
-        // 检查邮箱是否已存在（注册时）或不存在（找回密码时）
-        const user = await dbGet('SELECT id FROM users WHERE email = ?', [email]);
-
-        if (type === 'register') {
-            if (user) {
-                return res.status(400).json({ error: '该邮箱已被注册' });
-            }
-        } else if (type === 'forgot-password') {
-            if (!user) {
-                return res.status(400).json({ error: '该邮箱未注册' });
-            }
-        } else {
-            return res.status(400).json({ error: '无效的验证码类型' });
-        }
-
-        // 生成6位数字验证码
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-        // 设置5分钟后过期
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-
-        // 存储验证码
-        await dbRun(
-            'INSERT OR REPLACE INTO verification_codes (email, code, type, expires_at) VALUES (?, ?, ?, ?)',
-            [email, code, type, expiresAt]
-        );
-
-        console.log(`验证码已生成: ${code} 发送到 ${email}`);
-
-        // 实际环境中这里应该调用邮件服务
-        res.json({
-            message: '验证码已发送到您的邮箱',
-            testCode: code // 开发环境使用，生产环境移除
-        });
-
-    } catch (error) {
-        console.error('发送验证码错误:', error);
-        res.status(500).json({ error: '服务器内部错误' });
-    }
-});
-
-// ========== 注册（带邮箱验证） ==========
+// ========== 注册（账户名 + 密码，无需邮箱验证） ==========
 app.post("/api/register", async (req, res) => {
     try {
-        const { username, email, password, code } = req.body;
+        const { username, password } = req.body;
 
-        console.log('收到注册请求:', { username, email });
+        console.log('收到注册请求:', { username });
 
         // 基本验证
-        if (!username || !email || !password || !code) {
-            return res.status(400).json({ error: '缺少必填字段' });
+        if (!username || !password) {
+            return res.status(400).json({ error: '请输入账户名和密码' });
         }
 
-        // 验证验证码
-        const verification = await dbGet(
-            'SELECT * FROM verification_codes WHERE email = ? AND code = ? AND type = ? AND expires_at > ?',
-            [email, code, 'register', new Date().toISOString()]
-        );
-
-        if (!verification) {
-            return res.status(400).json({ error: '验证码无效或已过期' });
-        }
-
-        // 检查用户名是否已存在
+        // 检查账户名是否已存在
         const existingUser = await dbGet('SELECT id FROM users WHERE username = ?', [username]);
         if (existingUser) {
-            return res.status(400).json({ error: '用户名已存在' });
-        }
-
-        // 检查邮箱是否已存在
-        const existingEmail = await dbGet('SELECT id FROM users WHERE email = ?', [email]);
-        if (existingEmail) {
-            return res.status(400).json({ error: '邮箱已被注册' });
+            return res.status(400).json({ error: '账户名已存在' });
         }
 
         // 哈希密码
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // 创建用户
+        // 创建用户（无需邮箱）
         const result = await dbRun(
-            'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
-            [username, email, hashedPassword]
+            'INSERT INTO users (username, password_hash) VALUES (?, ?)',
+            [username, hashedPassword]
         );
-
-        // 删除已使用的验证码
-        await dbRun('DELETE FROM verification_codes WHERE email = ? AND type = ?', [email, 'register']);
 
         res.json({
             success: true,
@@ -245,11 +160,15 @@ app.post("/api/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
+        if (!username || !password) {
+            return res.status(400).json({ error: '请输入账户名和密码' });
+        }
+
         const user = await dbGet("SELECT * FROM users WHERE username = ?", [username]);
-        if (!user) return res.status(401).json({ error: "用户名或密码错误" });
+        if (!user) return res.status(401).json({ error: "账户名或密码错误" });
 
         const ok = await bcrypt.compare(password, user.password_hash);
-        if (!ok) return res.status(401).json({ error: "用户名或密码错误" });
+        if (!ok) return res.status(401).json({ error: "账户名或密码错误" });
 
         const token = jwt.sign(
             { id: user.id, username: user.username, role: user.role },
@@ -257,46 +176,11 @@ app.post("/api/login", async (req, res) => {
             { expiresIn: "7d" }
         );
 
-        res.json({ token, role: user.role });
+        res.json({ token, username: user.username, role: user.role });
 
     } catch (error) {
         console.error('登录错误:', error);
         res.status(500).json({ error: '登录失败' });
-    }
-});
-
-// ========== 重置密码 ==========
-app.post("/api/reset-password", async (req, res) => {
-    try {
-        const { email, code, newPassword } = req.body;
-
-        // 验证验证码
-        const verification = await dbGet(
-            'SELECT * FROM verification_codes WHERE email = ? AND code = ? AND type = ? AND expires_at > ?',
-            [email, code, 'forgot-password', new Date().toISOString()]
-        );
-
-        if (!verification) {
-            return res.status(400).json({ error: '验证码无效或已过期' });
-        }
-
-        // 哈希新密码
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // 更新密码
-        await dbRun(
-            'UPDATE users SET password_hash = ? WHERE email = ?',
-            [hashedPassword, email]
-        );
-
-        // 删除已使用的验证码
-        await dbRun('DELETE FROM verification_codes WHERE email = ? AND type = ?', [email, 'forgot-password']);
-
-        res.json({ message: '密码重置成功' });
-
-    } catch (error) {
-        console.error('重置密码错误:', error);
-        res.status(500).json({ error: '重置密码失败' });
     }
 });
 

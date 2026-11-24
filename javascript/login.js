@@ -1,33 +1,38 @@
+// 登录：账户名 + 密码，调用真实 API
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const username = document.getElementById('username').value;
+    const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     const submitBtn = document.querySelector('.submit-btn');
     const btnText = submitBtn.querySelector('.btn-text');
+
+    if (!username || !password) {
+        alert('请输入账户名和密码');
+        return;
+    }
 
     // 显示加载状态
     submitBtn.classList.add('loading');
     btnText.textContent = '登录中...';
 
     try {
-        // 模拟登录API调用
-        const res = await mockLoginAPI(username, password);
+        const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
         const data = await res.json();
 
         if (!res.ok) {
             throw new Error(data.error || '登录失败');
         }
 
-        // 关键修复：如果是OP_GXC用户，强制设置为admin角色
-        const userRole = (username === 'OP_GXC') ? 'admin' : 'user';
-
-        // 登录成功 - 保存完整的用户信息
+        // 登录成功 - 保存服务端返回的账户信息与角色
         localStorage.setItem("token", data.token);
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("role", userRole);  // 使用正确的角色
-
-        console.log("登录成功，角色设置:", { username, role: userRole });
+        localStorage.setItem("username", data.username || username);
+        localStorage.setItem("role", data.role || 'user');
 
         btnText.textContent = '登录成功！';
 
@@ -43,37 +48,6 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         // 恢复按钮状态
         submitBtn.classList.remove('loading');
         btnText.textContent = '登录';
-        alert('登录失败: ' + error.message);
+        alert('登录失败: ' + (error.message === 'Failed to fetch' ? '无法连接服务器，请稍后重试' : error.message));
     }
 });
-
-// 修改模拟登录API，生成更符合后端要求的token
-function mockLoginAPI(username, password) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (username && password) {
-                // 如果是管理员账户，返回admin角色
-                const role = (username === 'OP_GXC') ? 'admin' : 'user';
-
-                // 生成更符合真实API格式的token
-                const mockToken = btoa(`mock_${username}_${Date.now()}`).replace(/=/g, '');
-
-                resolve({
-                    ok: true,
-                    json: () => Promise.resolve({
-                        token: mockToken,
-                        username: username,
-                        role: role
-                    })
-                });
-            } else {
-                resolve({
-                    ok: false,
-                    json: () => Promise.resolve({
-                        error: '用户名或密码不能为空'
-                    })
-                });
-            }
-        }, 1000);
-    });
-}

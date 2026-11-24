@@ -64,29 +64,24 @@ function initializeData() {
     }
 }
 
-// 显示用户信息
+// 用户信息由 header-avatar.js 统一渲染（右上角只显示头像）
 function showUserInfo(username) {
-    const userInfo = document.getElementById('userInfo');
-    const usernameDisplay = document.getElementById('usernameDisplay');
-
-    if (username) {
-        usernameDisplay.textContent = username;
-        userInfo.style.display = 'flex';
+    if (typeof window.refreshHeaderAuth === 'function') {
+        window.refreshHeaderAuth();
     }
 }
 
-// 退出登录
+// 退出登录（入口在头像菜单中）
 function logout() {
-    if (confirm('确定要退出登录吗？')) {
+    if (typeof window.siteLogout === 'function') {
+        window.siteLogout();
+    } else {
         localStorage.removeItem("token");
         localStorage.removeItem("username");
         localStorage.removeItem("role");
-        window.location.href = "index.html";
     }
+    window.location.href = "index.html";
 }
-
-// 绑定退出登录按钮事件
-document.getElementById('logoutBtn').addEventListener('click', logout);
 
 function initializePage() {
     const token = localStorage.getItem("token");

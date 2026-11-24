@@ -34,15 +34,6 @@ CREATE TABLE IF NOT EXISTS votes (
   FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS verification_codes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT NOT NULL,
-    code TEXT NOT NULL,
-    type TEXT NOT NULL,
-    expires_at DATETIME NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
 -- 确保管理员用户存在
 INSERT OR IGNORE INTO users (username, password_hash, role, email) 
 VALUES ('OP_GXC', '$2b$10$dummyhashforinitialadmin', 'admin', 'admin@example.com');

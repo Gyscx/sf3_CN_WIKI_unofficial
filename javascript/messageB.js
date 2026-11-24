@@ -13,9 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const loginModal = document.getElementById('loginModal');
     const goToLoginBtn = document.getElementById('goToLogin');
     const goToRegisterBtn = document.getElementById('goToRegister');
-    const userInfo = document.getElementById('userInfo');
-    const usernameDisplay = document.getElementById('usernameDisplay');
-    const logoutBtn = document.getElementById('logoutBtn');
     const messageInput = document.getElementById('messageInput');
     const wordCount = document.getElementById('wordCount');
     const submitBtn = document.getElementById('submitBtn');
@@ -58,11 +55,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 显示用户信息
+    // 用户信息由 header-avatar.js 统一渲染（右上角只显示头像）
     function showUserInfo() {
         if (currentUser) {
-            usernameDisplay.textContent = currentUser.username;
-            userInfo.style.display = 'flex';
+            if (typeof window.refreshHeaderAuth === 'function') {
+                window.refreshHeaderAuth();
+            }
             messageInput.disabled = false;
             submitBtn.disabled = false;
         }
@@ -70,7 +68,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 隐藏用户信息
     function hideUserInfo() {
-        userInfo.style.display = 'none';
+        if (typeof window.refreshHeaderAuth === 'function') {
+            window.refreshHeaderAuth();
+        }
         messageInput.disabled = true;
         submitBtn.disabled = true;
     }
@@ -235,24 +235,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function setupEventListeners() {
         // 登录按钮
         goToLoginBtn.addEventListener('click', function () {
-            window.location.href = 'http://192.168.1.10:3000/login.html';
+            window.location.href = 'login.html';
         });
 
         // 注册按钮
         goToRegisterBtn.addEventListener('click', function () {
-            window.location.href = 'http://192.168.1.10:3000/register.html';
-        });
-
-        // 退出登录按钮
-        logoutBtn.addEventListener('click', function () {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('username');
-                localStorage.removeItem('role');
-                currentUser = null;
-                hideUserInfo();
-                window.location.href = 'index.html';
-            }
+            window.location.href = 'register.html';
         });
 
         // 输入事件

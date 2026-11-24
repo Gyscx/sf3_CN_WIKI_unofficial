@@ -1,4 +1,4 @@
-name: Deploy sf3wiki to GitHub Pages
+name: Deploy docs to GitHub Pages
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           # 网站文件所在目录（index.html 就在这里面）
-          path: ./sf3wiki
+          path: ./docs
 
   deploy:
     environment:

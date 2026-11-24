@@ -131,179 +131,37 @@ function getStoredPolls() {
 // 模拟用户投票记录
 const userVotes = {};
 
-// 更新模拟API函数，使用localStorage
+// 投票数据访问：配置 Supabase 后共享数据，否则退回浏览器本地存储
 async function api(path, options = {}) {
-    console.log("模拟API调用:", { path, options });
-
-    // 模拟网络延迟
-    await new Promise(resolve => setTimeout(resolve, 300));
-
     const token = localStorage.getItem("token");
     if (!token) {
         throw new Error("未授权访问，请先登录");
     }
 
-    // 从localStorage获取数据
-    let polls = getStoredPolls();
-    const username = localStorage.getItem("username");
-    const role = localStorage.getItem("role");
+    const parts = path.split('/').filter(Boolean);
 
-    // 解析路径
-    const pathParts = path.split('/').filter(p => p);
+    if (path === '/api/polls' || parts.join('/') === 'api/polls') {
+        return window.PollAPI.list();
+    }
 
-    // 修复：首先检查是否为DELETE请求
-    if (pathParts.length === 3 && pathParts[0] === 'api' && pathParts[1] === 'polls' && options.method === "DELETE") {
-        try {
-            const pollId = parseInt(pathParts[2]);
-            console.log("尝试删除投票:", { pollId, role });
-
-            if (role !== "admin") {
-                throw new Error("只有管理员可以删除投票");
-            }
-
-            // 获取当前投票数据
-            let polls = getStoredPolls();
-            if (!Array.isArray(polls)) {
-                console.error("投票数据不是数组，重置为空数组");
-                polls = [];
-            }
-
-            console.log("当前投票数量:", polls.length, "要删除的投票ID:", pollId);
-
-            const pollIndex = polls.findIndex(p => p.id === pollId);
-
-            if (pollIndex === -1) {
-                throw new Error(`投票不存在 (ID: ${pollId})`);
-            }
-
-            // 删除投票
-            const deletedPoll = polls.splice(pollIndex, 1)[0];
-
-            // 保存更新后的投票数据
-            localStorage.setItem('shadowFightPolls', JSON.stringify(polls));
-
-            // 同时删除该投票的用户投票记录
-            try {
-                const userVotes = JSON.parse(localStorage.getItem('userVotes') || '{}');
-                for (const user in userVotes) {
-                    if (userVotes[user] && userVotes[user][pollId] !== undefined) {
-                        delete userVotes[user][pollId];
-                    }
-                }
-                localStorage.setItem('userVotes', JSON.stringify(userVotes));
-            } catch (e) {
-                console.error("清理用户投票记录时出错:", e);
-            }
-
-            console.log("投票已删除:", deletedPoll.title);
-            return {
-                success: true,
-                message: "投票删除成功",
-                deletedPoll: deletedPoll
-            };
-        } catch (error) {
-            console.error("删除投票时发生错误:", error);
-            throw new Error("删除失败: " + error.message);
+    if (parts.length === 3 && parts[0] === 'api' && parts[1] === 'polls') {
+        const pollId = parseInt(parts[2]);
+        if (options.method === 'DELETE') {
+            return window.PollAPI.remove(pollId);
         }
+        return window.PollAPI.get(pollId);
     }
 
-    // 然后是其他GET请求
-    else if (path === '/api/polls' || pathParts.join('/') === 'api/polls') {
-        // 返回投票列表（不包含投票详情）
-        return polls.map(poll => ({
-            id: poll.id,
-            title: poll.title,
-            description: poll.description || '',
-            createdAt: poll.createdAt,
-            createdBy: poll.createdBy
-        }));
-    }
-
-    else if (pathParts.length === 3 && pathParts[0] === 'api' && pathParts[1] === 'polls') {
-        const pollId = parseInt(pathParts[2]);
-        const poll = polls.find(p => p.id === pollId);
-
-        if (!poll) {
-            throw new Error("投票不存在");
-        }
-
-        // 检查用户是否已投票
-        const userVotes = JSON.parse(localStorage.getItem('userVotes') || '{}');
-        const hasVoted = userVotes[username] && userVotes[username][pollId];
-
-        return {
-            poll: {
-                id: poll.id,
-                title: poll.title,
-                description: poll.description || ''
-            },
-            options: poll.options,
-            voted: !!hasVoted
-        };
-    }
-
-    else if (pathParts.length === 4 && pathParts[0] === 'api' && pathParts[1] === 'polls' && pathParts[3] === 'vote') {
-        const pollId = parseInt(pathParts[2]);
+    if (parts.length === 4 && parts[0] === 'api' && parts[1] === 'polls' && parts[3] === 'vote') {
         const body = JSON.parse(options.body || '{}');
-        const optionId = body.optionId;
-
-        if (!optionId) {
+        if (!body.optionId) {
             throw new Error("请选择投票选项");
         }
-
-        if (!username) {
-            throw new Error("用户未登录");
-        }
-
-        // 记录用户投票
-        const userVotes = JSON.parse(localStorage.getItem('userVotes') || '{}');
-        if (!userVotes[username]) {
-            userVotes[username] = {};
-        }
-        userVotes[username][pollId] = optionId;
-        localStorage.setItem('userVotes', JSON.stringify(userVotes));
-
-        // 记录到投票数据
-        polls = getStoredPolls();
-        const pollIndex = polls.findIndex(p => p.id === pollId);
-        if (pollIndex !== -1) {
-            if (!polls[pollIndex].votes) {
-                polls[pollIndex].votes = [];
-            }
-            polls[pollIndex].votes.push({
-                username: username,
-                optionId: optionId,
-                timestamp: new Date().toISOString()
-            });
-
-            // 保存更新后的投票数据
-            localStorage.setItem('shadowFightPolls', JSON.stringify(polls));
-        }
-
-        return { success: true, message: "投票成功" };
+        return window.PollAPI.vote(parseInt(parts[2]), body.optionId);
     }
 
-    else if (pathParts.length === 4 && pathParts[0] === 'api' && pathParts[1] === 'polls' && pathParts[3] === 'results') {
-        const pollId = parseInt(pathParts[2]);
-        polls = getStoredPolls();
-        const poll = polls.find(p => p.id === pollId);
-
-        if (!poll) {
-            throw new Error("投票不存在");
-        }
-
-        // 统计投票结果
-        const votes = poll.votes || [];
-        const results = poll.options.map(option => {
-            const count = votes.filter(vote => vote.optionId === option.id).length;
-            return {
-                id: option.id,
-                text: option.text,
-                count: count
-            };
-        });
-
-        return results;
+    if (parts.length === 4 && parts[0] === 'api' && parts[1] === 'polls' && parts[3] === 'results') {
+        return window.PollAPI.results(parseInt(parts[2]));
     }
 
     throw new Error("API路径不存在: " + path);

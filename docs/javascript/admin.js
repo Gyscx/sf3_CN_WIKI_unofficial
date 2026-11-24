@@ -80,54 +80,7 @@ async function createPoll() {
     }
 }
 
-// 替换admin.html中的mockCreatePollAPI函数
+// 创建投票：配置 Supabase 后所有人可见，否则只保存在当前浏览器
 function mockCreatePollAPI(title, options) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (!title || !options || options.length < 2) {
-                reject(new Error("标题和选项不能为空"));
-                return;
-            }
-
-            try {
-                // 从localStorage获取现有投票
-                const storedPolls = JSON.parse(localStorage.getItem('shadowFightPolls') || '[]');
-
-                // 生成新的投票ID（确保不重复）
-                const newId = storedPolls.length > 0 ? Math.max(...storedPolls.map(p => p.id)) + 1 : 1;
-
-                // 创建新投票对象
-                const newPoll = {
-                    id: newId,
-                    title: title,
-                    description: "", // 可以后续添加描述字段
-                    options: options.map((text, index) => ({
-                        id: index + 1,
-                        text: text
-                    })),
-                    votes: [],
-                    createdAt: new Date().toISOString(),
-                    createdBy: localStorage.getItem("username") || "admin"
-                };
-
-                // 添加到投票列表
-                storedPolls.push(newPoll);
-
-                // 保存到localStorage
-                localStorage.setItem('shadowFightPolls', JSON.stringify(storedPolls));
-
-                console.log("新投票已创建并保存:", newPoll);
-
-                resolve({
-                    success: true,
-                    message: "投票创建成功",
-                    pollId: newPoll.id,
-                    title: title,
-                    options: options
-                });
-            } catch (error) {
-                reject(new Error("保存投票失败: " + error.message));
-            }
-        }, 1500);
-    });
+    return window.PollAPI.create(title, options, localStorage.getItem("username") || "admin");
 }

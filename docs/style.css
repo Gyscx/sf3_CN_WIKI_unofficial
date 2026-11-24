@@ -1992,3 +1992,7 @@ footer {
         justify-content: center;
     }
 }
+
+.form-card + .form-card {
+    margin-top: 24px;
+}

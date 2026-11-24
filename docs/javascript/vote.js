@@ -3,16 +3,9 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeData();
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
-    let role = localStorage.getItem("role");
+    const role = localStorage.getItem("role");
 
     console.log("登录状态检查:", { token, username, role });
-
-    // 特殊处理：如果用户是OP_GXC但角色不正确，强制修复
-    if (username === "OP_GXC" && role !== "admin") {
-        console.log("检测到OP_GXC账户但角色不正确，正在修复...");
-        role = "admin";
-        localStorage.setItem("role", "admin");
-    }
 
     // 如果未登录，保存目标页面并跳转到登录页
     if (!token || !username) {

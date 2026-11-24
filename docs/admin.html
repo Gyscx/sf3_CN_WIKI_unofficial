@@ -54,6 +54,34 @@
                     <div class="btn-loader"></div>
                 </button>
             </div>
+
+            <div class="form-card">
+                <h3>管理员密码</h3>
+                <p class="muted" id="adminPasswordHint"></p>
+                <button type="button" class="back-btn" id="regenerateAdminUsernameBtn">重新生成管理员账户名</button>
+                <form id="adminPasswordForm">
+                    <div class="form-section">
+                        <div class="input-group">
+                            <label for="currentAdminPassword">原密码（首次设置可留空）</label>
+                            <input type="password" id="currentAdminPassword" placeholder="已设置时请输入原密码">
+                            <div class="input-underline"></div>
+                        </div>
+                        <div class="input-group">
+                            <label for="newAdminPassword">新密码</label>
+                            <input type="password" id="newAdminPassword" placeholder="设置管理员密码" required>
+                            <div class="input-underline"></div>
+                        </div>
+                        <div class="input-group">
+                            <label for="confirmAdminPassword">确认新密码</label>
+                            <input type="password" id="confirmAdminPassword" placeholder="再次输入新密码" required>
+                            <div class="input-underline"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <span class="btn-text">保存管理员密码</span>
+                    </button>
+                </form>
+            </div>
         </div>
     </main>
 

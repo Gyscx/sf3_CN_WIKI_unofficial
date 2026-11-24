@@ -1,3 +1,11 @@
+// 登录页显示本浏览器随机生成的管理员账户名
+document.addEventListener('DOMContentLoaded', function () {
+    const note = document.getElementById('adminUsernameNote');
+    if (note && window.SF3Auth) {
+        note.textContent = '管理员账户名（本浏览器）：' + window.SF3Auth.adminUsername();
+    }
+});
+
 // 登录：账户名 + 密码，纯静态校验（不依赖后端）
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();

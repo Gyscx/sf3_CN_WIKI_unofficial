@@ -26,6 +26,55 @@ document.addEventListener('DOMContentLoaded', function () {
     // 初始化选项
     addOption();
     addOption();
+
+    // 管理员密码设置
+    const hint = document.getElementById('adminPasswordHint');
+    const form = document.getElementById('adminPasswordForm');
+
+    function refreshHint() {
+        if (!hint) return;
+        const name = window.SF3Auth.adminUsername();
+        hint.textContent = '管理员账户名（仅本浏览器）：' + name + '。' +
+            (window.SF3Auth.hasAdminPassword()
+                ? '密码已设置，修改时需要输入原密码。'
+                : '尚未设置密码，目前输入任意密码即可登录，请尽快设置。');
+    }
+
+    refreshHint();
+
+    const regenerateBtn = document.getElementById('regenerateAdminUsernameBtn');
+    if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', function () {
+            if (!confirm('确定要重新生成管理员账户名吗？旧的账户名将立即失效。')) return;
+            window.SF3Auth.regenerateAdminUsername();
+            refreshHint();
+            alert('管理员账户名已重新生成，请记好新的账户名。');
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const current = document.getElementById('currentAdminPassword').value;
+            const next = document.getElementById('newAdminPassword').value;
+            const confirm = document.getElementById('confirmAdminPassword').value;
+
+            if (next !== confirm) {
+                alert('两次输入的新密码不一致');
+                return;
+            }
+
+            const result = window.SF3Auth.setAdminPassword(current, next);
+            if (!result.ok) {
+                alert(result.error);
+                return;
+            }
+
+            alert('管理员密码已保存');
+            form.reset();
+            refreshHint();
+        });
+    }
 });
 
 function addOption(value = "") {

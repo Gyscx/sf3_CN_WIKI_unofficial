@@ -6,8 +6,10 @@
     'use strict';
 
     const USERS_KEY = 'sf3_users';
-    const ADMIN_PW_KEY = 'sf3_admin_password';
     const ADMIN_USERNAME_KEY = 'sf3_admin_username';
+
+    // 清理旧版本手工设置的管理员密码，统一使用代码里的密码规则
+    localStorage.removeItem('sf3_admin_password');
 
     // 随机生成管理员账户名，避免使用固定用户名被他人猜测
     function randomString(length) {
@@ -52,21 +54,9 @@
         localStorage.setItem(USERS_KEY, JSON.stringify(users));
     }
 
-    // 管理员密码保存在当前浏览器中；未设置时沿用“任意密码登录”的初始约定
-    function hasAdminPassword() {
-        return !!localStorage.getItem(ADMIN_PW_KEY);
-    }
-
-    function setAdminPassword(current, next) {
-        const existing = localStorage.getItem(ADMIN_PW_KEY);
-        if (existing && current !== existing) {
-            return { ok: false, error: '原管理员密码不正确' };
-        }
-        if (!next) {
-            return { ok: false, error: '请输入新密码' };
-        }
-        localStorage.setItem(ADMIN_PW_KEY, next);
-        return { ok: true };
+    // 管理员密码由账户名按固定规则生成，不在页面显示
+    function adminPassword(name) {
+        return '666' + name + '666';
     }
 
     function register(username, password) {
@@ -91,10 +81,9 @@
         if (!name || !password) {
             return { ok: false, error: '请输入账户名和密码' };
         }
-        // 管理员账户使用随机生成的账户名；未设置密码时任意非空密码可进入
+        // 管理员账户使用随机账户名 + 代码规则生成的密码
         if (name === getAdminUsername()) {
-            const saved = localStorage.getItem(ADMIN_PW_KEY);
-            if (saved && password !== saved) {
+            if (password !== adminPassword(name)) {
                 return { ok: false, error: '管理员密码错误' };
             }
             return { ok: true, username: name, role: 'admin', token: 'mock_token_' + Date.now() };
@@ -115,8 +104,6 @@
         register: register,
         login: login,
         readUsers: readUsers,
-        hasAdminPassword: hasAdminPassword,
-        setAdminPassword: setAdminPassword,
         adminUsername: getAdminUsername,
         regenerateAdminUsername: regenerateAdminUsername
     };

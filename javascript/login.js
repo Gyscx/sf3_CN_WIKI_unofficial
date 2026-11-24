@@ -1,4 +1,4 @@
-// 登录：账户名 + 密码，调用真实 API
+// 登录：账户名 + 密码，纯静态校验（不依赖后端）
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -17,22 +17,16 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     btnText.textContent = '登录中...';
 
     try {
-        const res = await fetch("/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
+        const result = window.SF3Auth.login(username, password);
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.error || '登录失败');
+        if (!result.ok) {
+            throw new Error(result.error || '登录失败');
         }
 
-        // 登录成功 - 保存服务端返回的账户信息与角色
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("username", data.username || username);
-        localStorage.setItem("role", data.role || 'user');
+        // 登录成功 - 保存账户信息
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('username', result.username);
+        localStorage.setItem('role', result.role || 'user');
 
         btnText.textContent = '登录成功！';
 
@@ -48,6 +42,6 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         // 恢复按钮状态
         submitBtn.classList.remove('loading');
         btnText.textContent = '登录';
-        alert('登录失败: ' + (error.message === 'Failed to fetch' ? '无法连接服务器，请稍后重试' : error.message));
+        alert('登录失败: ' + error.message);
     }
 });

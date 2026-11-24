@@ -25,19 +25,13 @@
             loginModal.style.display = 'flex';
         }
 
-        // 调用真实登录 API：账户名 + 密码
-        async function login(username, password) {
-            const res = await fetch("/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
-            });
-
-            const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.error || '登录失败');
+        // 纯静态登录：账户名 + 密码
+        function login(username, password) {
+            const result = window.SF3Auth.login(username, password);
+            if (!result.ok) {
+                throw new Error(result.error || '登录失败');
             }
-            return data;
+            return result;
         }
 
         if (performLogin) {
@@ -66,7 +60,7 @@
                     localStorage.removeItem('targetPage');
                     window.location.href = targetPage || 'index.html';
                 } catch (error) {
-                    alert('登录失败: ' + (error.message === 'Failed to fetch' ? '无法连接服务器，请稍后重试' : error.message));
+                    alert('登录失败: ' + error.message);
                     performLogin.textContent = '登录';
                     performLogin.disabled = false;
                 }

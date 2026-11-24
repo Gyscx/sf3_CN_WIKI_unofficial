@@ -1,4 +1,4 @@
-// 注册：仅使用账户名 + 密码，无需邮箱验证码
+// 注册：账户名 + 密码，账户信息仅保存在当前浏览器中
 document.getElementById('registerForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -17,23 +17,17 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     btnText.textContent = '注册中...';
 
     try {
-        const res = await fetch("/api/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
+        const result = window.SF3Auth.register(username, password);
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.error || '注册失败');
+        if (!result.ok) {
+            throw new Error(result.error || '注册失败');
         }
 
         // 注册成功
         btnText.textContent = '注册成功！';
         setTimeout(() => {
-            alert("注册成功，请使用账户名和密码登录");
-            location.href = "login.html";
+            alert('注册成功，请使用账户名和密码登录（账户信息保存在当前浏览器）');
+            location.href = 'login.html';
         }, 1000);
 
     } catch (error) {

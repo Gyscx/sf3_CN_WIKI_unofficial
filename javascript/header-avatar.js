@@ -9,7 +9,9 @@
     // 通过脚本自身路径定位站点根目录，子页面也能正确找到 login.html
     const scriptEl = document.querySelector('script[src*="header-avatar.js"]');
     const scriptUrl = scriptEl ? scriptEl.src : window.location.href;
-    const loginUrl = new URL('login.html', scriptUrl).href;
+    // 脚本位于 javascript/ 目录下，需回到站点根目录再拼接 login.html
+    const rootUrl = new URL(scriptEl ? '../' : './', scriptUrl);
+    const loginUrl = new URL('login.html', rootUrl).href;
 
     function refresh() {
         const token = localStorage.getItem('token');
